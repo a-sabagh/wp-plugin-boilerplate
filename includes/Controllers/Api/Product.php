@@ -9,7 +9,7 @@ class Product {
     }
 
     public function test() {
-        wp_send_json($response);
+        wp_send_json(array('key' => 'value'));
     }
 
 }

@@ -2,10 +2,10 @@
 
 /*
  * Plugin Name: Plugin Boilerplate
- * Description: Plugin Boilerplate for Onliner Developer Team
+ * Description: Plugin boilerplate with api router
  * Version: 1.0
- * Author: Onliner Developer Team
- * Author URI: http://onliner.ir
+ * Author: Abolfazl Sabagh
+ * Author URI: http://asabagh.ir
  * Text Domain: ODT
  */
 

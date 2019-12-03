@@ -8,6 +8,8 @@ use ODT\ServiceProviders\ApiServiceProvider;
 defined('ABSPATH') || exit;
 
 class Init {
+    
+    const first_flush_option = "first_flush_permalinks";
 
     public $version;
     public $web_slug;
@@ -17,22 +19,27 @@ class Init {
         $this->version = $version;
         $this->web_slug = $web_slug;
         $this->api_slug = $api_slug;
+        add_action("init", array($this, "add_rewrite_rule"));
+        add_action("admin_notices", array($this, "first_flush_notice"));
+        add_action("update_option_permalink_structure", function() {
+            update_option(self::first_flush_option, true);
+        });
         $this->boot_loader();
         $this->boot_service_provider();
     }
 
     public function add_rewrite_rule() {
-        add_rewrite_rule("^{$this->slug}/([^/]*)/?([^/]*)/?([^/]*)/?$", 'index.php?abp_module=$matches[1]&abp_action=$matches[2]&abp_params=$matches[3]', "top");
-        add_rewrite_tag("%abp_module%", "([^/]*)");
-        add_rewrite_tag("%abp_action%", "([^/]*)");
-        add_rewrite_tag("%abp_params%", "([^/]*)");
+        add_rewrite_rule("^{$this->api_slug}/([^/]*)/?([^/]*)/?([^/]*)/?$", 'index.php?odt_module=$matches[1]&odt_action=$matches[2]&odt_params=$matches[3]', "top");
+        add_rewrite_tag("%odt_module%", "([^/]*)");
+        add_rewrite_tag("%odt_action%", "([^/]*)");
+        add_rewrite_tag("%odt_params%", "([^/]*)");
     }
 
     public function boot_loader() {
         require_once trailingslashit(__DIR__) . "Models/Product.php";
         require_once trailingslashit(__DIR__) . "Databases/ProductDB.php";
     }
-    
+
     public function first_flush_notice() {
         if (get_option(self::first_flush_option)) {
             return;
@@ -54,12 +61,12 @@ class Init {
         $web_services = array(
             \ODT\Controllers\Web\ProductLogic::class => trailingslashit(__DIR__) . "Controllers/Web/ProductLogic.php",
             \ODT\Controllers\Web\ProductController::class => trailingslashit(__DIR__) . "Controllers/Web/ProductController.php",
-            \ODT\Controllers\Web\CartController::class => trailingslashit(__DIR__) . "Contrlllers/Web/CartController.php",
+            \ODT\Controllers\Web\CartController::class => trailingslashit(__DIR__) . "Controllers/Web/CartController.php",
             \ODT\Controllers\Web\OrderController::class => trailingslashit(__DIR__) . "Controllers/Web/OrderController.php",
         );
         # Api Services
         $api_services = array(
-            \ODT\Controllers\Web\ProductLogic::class => trailingslashit(__DIR__) . "Controllers/Api/Product.php",
+            \ODT\Controllers\Api\Product::class => trailingslashit(__DIR__) . "Controllers/Api/Product.php",
             \ODT\Controllers\Api\Cart::class => trailingslashit(__DIR__) . "Controllers/Api/Cart.php"
         );
         $api_mapper = array(
