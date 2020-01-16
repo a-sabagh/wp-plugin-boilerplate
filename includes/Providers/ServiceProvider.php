@@ -1,10 +1,10 @@
 <?php
 
-namespace ODT\ServiceProviders;
+namespace ODT\Providers;
 
 defined('ABSPATH') || exit;
 
-class WebServiceProvider {
+class ServiceProvider {
 
     public $modules;
 

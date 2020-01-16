@@ -12,8 +12,6 @@ class OrderController {
 
     public function __construct($service_provider) {
         $this->product_controller = $service_provider->get(ProductController::class);
-        $this->order_controller = $service_provider->get(OrderController::class);
-        
     }
     
 }

@@ -2,8 +2,8 @@
 
 namespace ODT;
 
-use ODT\ServiceProviders\WebServiceProvider;
-use ODT\ServiceProviders\ApiServiceProvider;
+use ODT\Providers\ServiceProvider;
+use ODT\Providers\ApiProvider;
 
 defined('ABSPATH') || exit;
 
@@ -57,15 +57,14 @@ class Init {
     }
 
     public function boot_service_provider() {
-        # Web Services
-        $web_services = array(
+        # Services
+        $services = array(
+            #Web
             \ODT\Controllers\Web\ProductLogic::class => trailingslashit(__DIR__) . "Controllers/Web/ProductLogic.php",
             \ODT\Controllers\Web\ProductController::class => trailingslashit(__DIR__) . "Controllers/Web/ProductController.php",
             \ODT\Controllers\Web\CartController::class => trailingslashit(__DIR__) . "Controllers/Web/CartController.php",
             \ODT\Controllers\Web\OrderController::class => trailingslashit(__DIR__) . "Controllers/Web/OrderController.php",
-        );
-        # Api Services
-        $api_services = array(
+            #Api
             \ODT\Controllers\Api\Product::class => trailingslashit(__DIR__) . "Controllers/Api/Product.php",
             \ODT\Controllers\Api\Cart::class => trailingslashit(__DIR__) . "Controllers/Api/Cart.php"
         );
@@ -74,14 +73,14 @@ class Init {
             "Cart" => \ODT\Controllers\Api\Cart::class
         );
         # BootServices
-        $this->app_service_providers($web_services, $api_services, $api_mapper);
+        $this->app_service_providers($services, $api_mapper);
     }
 
-    public function app_service_providers($web_services, $api_services, $api_mapper) {
-        require_once trailingslashit(__DIR__) . "ServiceProviders/WebServiceProvider.php";
-        require_once trailingslashit(__DIR__) . "ServiceProviders/ApiServiceProvider.php";
-        new WebServiceProvider($web_services);
-        new ApiServiceProvider($api_services, $api_mapper);
+    public function app_service_providers($services, $api_mapper) {
+        require_once trailingslashit(__DIR__) . "Providers/ServiceProvider.php";
+        require_once trailingslashit(__DIR__) . "Providers/ApiProvider.php";
+        $service_provider = new ServiceProvider($services);
+        new ApiProvider($service_provider,$api_mapper);
     }
 
 }
