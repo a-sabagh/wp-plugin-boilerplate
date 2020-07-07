@@ -4,6 +4,7 @@ namespace ODT;
 
 use ODT\Providers\ServiceProvider;
 use ODT\Providers\ApiProvider;
+use ODT\Providers\TableProvider;
 
 defined('ABSPATH') || exit;
 
@@ -25,6 +26,7 @@ class Init {
             update_option(self::first_flush_option, true);
         });
         $this->boot_loader();
+        $this->boot_tables_provider();
         $this->boot_service_provider();
     }
 
@@ -38,6 +40,14 @@ class Init {
     public function boot_loader() {
         require_once trailingslashit(__DIR__) . "Models/Product.php";
         require_once trailingslashit(__DIR__) . "Databases/ProductDB.php";
+    }
+
+    public function boot_tables_provider(){
+        $tables = array(
+            \ODT\Tables\MessagesTable::class => trailingslashit(__DIR__) . "Tables/MessagesTable.php",
+        );
+        require_once trailingslashit(__DIR__) . "Providers/TableProvider.php";
+        new TableProvider($tables);
     }
 
     public function first_flush_notice() {
