@@ -38,8 +38,8 @@ class Init {
     }
 
     public function boot_loader() {
-        require_once trailingslashit(__DIR__) . "Models/Product.php";
-        require_once trailingslashit(__DIR__) . "Databases/ProductDB.php";
+        require_once trailingslashit(__DIR__) . 'Libraries/Model.php';
+        require_once trailingslashit(__DIR__) . "Models/Message.php";
     }
 
     public function boot_tables_provider(){
