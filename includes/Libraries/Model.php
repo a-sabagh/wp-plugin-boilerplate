@@ -13,6 +13,9 @@ abstract class Model {
 
     public function set_data(array $data){
         foreach($data as $key => $value){
+            if(!isset($data[$key])){
+                continue;
+            }
             $this->data[$key] = $value;
         }
         return $this;
