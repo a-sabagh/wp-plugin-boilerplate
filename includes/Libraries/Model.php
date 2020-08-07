@@ -27,7 +27,7 @@ abstract class Model {
 
     public function save($id=null){
         if(is_numeric($this->id)){
-            return static::update($this->data);
+            return static::update($this->id,$this->data);
         }else{
             return static::create($this->data);
         }
