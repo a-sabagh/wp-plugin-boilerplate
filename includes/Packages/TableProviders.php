@@ -1,6 +1,6 @@
 <?php 
 
-namespace ODT\Providers;
+namespace WOAP\Providers;
 
 class TableProvider {
     
@@ -9,8 +9,8 @@ class TableProvider {
     public function __construct($tables){
         $this->tables = $tables;
         require_once (trailingslashit(ABSPATH) . 'wp-admin/includes/upgrade.php');
-        register_activation_hook(ODT_FILE, array($this,"install"));
-        register_uninstall_hook(ODT_FILE, array(__CLASS__,"uninstall"));
+        register_activation_hook(WOAP_FILE, array($this,"install"));
+        register_uninstall_hook(WOAP_FILE, array(__CLASS__,"uninstall"));
     }
 
     public function install() {

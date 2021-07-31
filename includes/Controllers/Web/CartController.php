@@ -1,8 +1,9 @@
 <?php
 
-namespace ODT\Controllers\Web;
+namespace WOAP\Controllers\Web;
 
+use WOAP\Packages\Controller;
 
-class CartController {
+class CartController extends Controller{
     
 }

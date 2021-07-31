@@ -1,14 +1,14 @@
 <?php
 
-use ODT\Libraries\Model;
+use WOAP\Libraries\Model;
 
-namespace ODT\Models;
+namespace WOAP\Models;
 
 class Product extends Model {
 
     protected $data = array();
 
-    const table = "odt_messages";
+    const table = "woap_messages";
 
     public static function create($data=null){}
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace ODT;
+namespace WOAP;
 
-use ODT\Providers\ServiceProvider;
-use ODT\Providers\ApiProvider;
-use ODT\Providers\TableProvider;
+use WOAP\Packages\ServiceProvider;
+use WOAP\Packages\ApiProvider;
+use WOAP\Packages\TableProvider;
 
 defined('ABSPATH') || exit;
 
@@ -20,33 +20,30 @@ class Init {
         $this->version = $version;
         $this->web_slug = $web_slug;
         $this->api_slug = $api_slug;
-        add_action("init", array($this, "add_rewrite_rule"));
         add_action("admin_notices", array($this, "first_flush_notice"));
         add_action("update_option_permalink_structure", function() {
             update_option(self::first_flush_option, true);
         });
-        $this->boot_loader();
+		$this->boot_modules();
         $this->boot_tables_provider();
-        $this->boot_service_provider();
+		$this->service_container = $this->boot_services();
+		$this->route_init($this->service_container);
     }
 
-    public function add_rewrite_rule() {
-        add_rewrite_rule("^{$this->api_slug}/([^/]*)/?([^/]*)/?([^/]*)/?$", 'index.php?odt_module=$matches[1]&odt_action=$matches[2]&odt_params=$matches[3]', "top");
-        add_rewrite_tag("%odt_module%", "([^/]*)");
-        add_rewrite_tag("%odt_action%", "([^/]*)");
-        add_rewrite_tag("%odt_params%", "([^/]*)");
-    }
-
-    public function boot_loader() {
-        require_once trailingslashit(__DIR__) . 'Libraries/Model.php';
-        require_once trailingslashit(__DIR__) . "Models/Message.php";
+    public function boot_modules() {
+		require_once trailingslashit(__DIR__) . 'Packages/Stack.php';
+		require_once trailingslashit(__DIR__) . 'Packages/Database.php';
+		require_once trailingslashit(__DIR__) . 'Packages/Request.php';
+		require_once trailingslashit(__DIR__) . 'Packages/Model.php';
+		require_once trailingslashit(__DIR__) . 'Packages/Controller.php';
+		require_once trailingslashit(__DIR__) . 'Models/Message.php';	
     }
 
     public function boot_tables_provider(){
         $tables = array(
-            \ODT\Tables\MessagesTable::class => trailingslashit(__DIR__) . "Tables/MessagesTable.php",
+            \WOAP\Tables\MessagesTable::class => trailingslashit(__DIR__) . "Tables/MessagesTable.php",
         );
-        require_once trailingslashit(__DIR__) . "Providers/TableProvider.php";
+        require_once trailingslashit(__DIR__) . "Packages/TableProvider.php";
         new TableProvider($tables);
     }
 
@@ -66,31 +63,25 @@ class Init {
         <?php
     }
 
-    public function boot_service_provider() {
-        # Services
-        $services = array(
-            #Web
-            \ODT\Controllers\Web\ProductLogic::class => trailingslashit(__DIR__) . "Controllers/Web/ProductLogic.php",
-            \ODT\Controllers\Web\ProductController::class => trailingslashit(__DIR__) . "Controllers/Web/ProductController.php",
-            \ODT\Controllers\Web\CartController::class => trailingslashit(__DIR__) . "Controllers/Web/CartController.php",
-            \ODT\Controllers\Web\OrderController::class => trailingslashit(__DIR__) . "Controllers/Web/OrderController.php",
-            #Api
-            \ODT\Controllers\Api\Product::class => trailingslashit(__DIR__) . "Controllers/Api/Product.php",
-            \ODT\Controllers\Api\Cart::class => trailingslashit(__DIR__) . "Controllers/Api/Cart.php"
-        );
-        $api_mapper = array(
-            "Product" => \ODT\Controllers\Api\Product::class,
-            "Cart" => \ODT\Controllers\Api\Cart::class
-        );
-        # BootServices
-        $this->app_service_providers($services, $api_mapper);
-    }
+	public function boot_services(){
+		require_once trailingslashit(__DIR__) . 'Packages/ServiceContainer.php';
+		$services = [
+			Controllers\Web\CartController::class => trailingslashit(__DIR__) . 'Controllers/Web/CartController.php',
+			Controllers\Api\Cart::class =>  trailingslashit(__DIR__) . 'Controllers/Api/Cart.php',
+		];
+		return new ServiceContainer($services);
+	}
 
-    public function app_service_providers($services, $api_mapper) {
-        require_once trailingslashit(__DIR__) . "Providers/ServiceProvider.php";
-        require_once trailingslashit(__DIR__) . "Providers/ApiProvider.php";
-        $service_provider = new ServiceProvider($services);
-        new ApiProvider($service_provider,$api_mapper);
-    }
+	public function route_init($service_container=null){
+		require_once trailingslashit(__DIR__) . 'Packages/Router.php';
+		$serviec_container = $service_container ?: $this->service_container;	
+		$route_mapping = [
+			'WOAPApi' => [
+				'namespace' => 'WOAP\Controllers\Api',
+				'type' => 'api',
+			],	
+		];
+		$router = new Router($service_container,$route_mapping);
+	}
 
 }

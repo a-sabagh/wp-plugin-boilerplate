@@ -1,12 +1,12 @@
 <?php
 
-namespace ODT\Tables;
+namespace WOAP\Tables;
 
 class MessagesTable {
 
     public $wpdb;
 
-    const table = "odt_messages";
+    const table = "woap_messages";
 
     public function __construct() {
         global $wpdb;

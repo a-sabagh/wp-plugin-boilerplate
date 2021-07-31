@@ -1,6 +1,6 @@
 <?php
 
-namespace ODT\Providers;
+namespace WOAP\Providers;
 
 defined('ABSPATH') || exit;
 
